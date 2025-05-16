@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from agora_token_builder import RtcTokenBuilder, Role_Attendee, Role_Publisher
+from agora_token_builder import RtcTokenBuilder
 import os
 from dotenv import load_dotenv
 import time
@@ -14,6 +14,10 @@ CORS(app)
 # Get Agora credentials from environment variables
 APP_ID = os.getenv('APP_ID')
 APP_CERTIFICATE = os.getenv('APP_CERTIFICATE')
+
+# Define role constants
+ROLE_PUBLISHER = 1  # Host/Publisher
+ROLE_SUBSCRIBER = 2  # Audience/Subscriber
 
 @app.route('/ping', methods=['GET'])
 def ping():
@@ -39,7 +43,7 @@ def get_token():
         # Generate token based on token type
         if token_type == 'rtc':
             # Determine role
-            role_value = Role_Publisher if role == 'publisher' else Role_Attendee
+            role_value = ROLE_PUBLISHER if role == 'publisher' else ROLE_SUBSCRIBER
             
             # Generate RTC token
             token = RtcTokenBuilder.buildTokenWithUid(
